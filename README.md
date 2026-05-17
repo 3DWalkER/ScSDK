@@ -19,7 +19,7 @@
 2. Clone this repository with submodules
 
     ```sh
-    git clone --recurse-submodules https://github.com/3DWalker/ScSDK
+    git clone --recurse-submodules https://github.com/3DWalkER/ScSDK
     ```
 	
 3. Create your build directory. Replace `<BUILD_DIR>` with your build directory name:
