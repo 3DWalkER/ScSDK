@@ -4,7 +4,7 @@ cmake_minimum_required(VERSION 3.12...3.29)
 # CMake called variable
 option(SC_BUILD_SHARED_LIBS "If enabled, all sdk libraries will be build as shared objects; otherwise all libraries will be built as static objects" ON)
 option(SC_SIMPLE_INSTALL "If enabled, removes all the additional indirection (platform/cpu/config) in the bin and lib directories on the install step" ON)
-option(SC_ENABLE_TESTING "Flag to enable/disable building unit and integration tests" OFF)
+option(SC_ENABLE_TESTING "Flag to enable/disable building unit and integration tests" ON)
 
 set(SC_BUILD_ONLY "" CACHE STRING "A semi-colon delimited list of the projects to build")
 
@@ -60,6 +60,7 @@ set(CMAKE_MODULE_PATH "${CMAKE_CURRENT_LIST_DIR}/cmake")
 include(utilities)
 include(initialize_project_version)
 include(sdks)
+include(ide)
 
 # add subdirectory
 sc_add_sdk()

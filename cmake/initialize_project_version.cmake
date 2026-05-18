@@ -37,7 +37,7 @@ macro(sc_add_project name inc_dir description)
 	project(${name} VERSION "${PROJECT_VERSION}" LANGUAGES CXX C)
 	
 	# Collect source and header files
-	include(ide)
+	sc_collect_all_files()
 
 	# Automatically define library targets
 	if(SC_BUILD_SHARED_LIBS)
@@ -59,7 +59,7 @@ macro(sc_add_project name inc_dir description)
         $<INSTALL_INTERFACE:include>
     )
 	
-	# Link dependencies strictly as PRIVATE to hide cjson/spdlog implementation details
+	# Link dependencies strictly as PRIVATE to hide implementation details
 	if(PROJECT_LIBS)
 		foreach(lib IN LISTS PROJECT_LIBS)
 			target_link_libraries(${PROJECT_NAME} PRIVATE $<BUILD_INTERFACE:${lib}>)
@@ -114,4 +114,44 @@ macro(sc_obtain_project_version)
 	endif()
 
 	set(PROJECT_VERSION "${VERSION_STRING}")
+endmacro()
+
+
+#[[
+	Macro: sc_add_test
+	Description:
+		Defines a test executable target, configures its source files,
+	links requested libraries, and sets up MSVC-specific runtime environments.
+	
+	Arguments:
+		- name        : The name of the test project and output executable target.
+		- description : A brief text description of the test purpose (unused but reserved).
+		- ${ARGN}     : Optional list of dependency libraries to link against.
+]]
+macro(sc_add_test name description)	
+	# Initialize the project with the specified name and languages
+	project(${name} LANGUAGES CXX C)
+	
+	# Collect source and header files
+	sc_collect_all_files("${CMAKE_CURRENT_SOURCE_DIR}" "${CMAKE_CURRENT_SOURCE_DIR}")
+
+	add_executable(${PROJECT_NAME} ${SC_SOURCES_ALL} ${SC_HEADERS_ALL})
+	
+	# Use a localized variable name to prevent overwriting variables in the parent scope
+	set(PROJECT_LIBS "${ARGN}")
+	if(PROJECT_LIBS)
+		target_link_libraries(${PROJECT_NAME} PRIVATE ${PROJECT_LIBS})
+	endif()
+
+	# Apply Windows/MSVC specific configurations
+	if(MSVC)
+		# Append the utility DLL directory to the Windows PATH for the Visual Studio debugger
+		set_target_properties(${PROJECT_NAME} PROPERTIES
+			VS_DEBUGGER_ENVIRONMENT "PATH=$<TARGET_FILE_DIR:ScUtils>;%PATH%"
+			WIN32_EXECUTABLE TRUE
+		)
+		
+		# Force the linker to use standard main entry point even with WIN32_EXECUTABLE enabled
+		target_link_options(${PROJECT_NAME} PRIVATE "/ENTRY:mainCRTStartup")
+	endif()
 endmacro()

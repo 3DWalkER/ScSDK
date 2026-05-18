@@ -1,8 +1,6 @@
 #include "scutils/text/scstring.h"
 #include "scutils/utils/scconfig.h"
 #include "scutils/text/scstringlist.h"
-#include "scutils/io/scdir.h"
-#include "scutils/io/scfilesystementry_p.h"
 
 #include <string>
 
