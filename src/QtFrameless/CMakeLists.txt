@@ -1,5 +1,5 @@
 # Define main project utility library with dependencies
-sc_add_qt_project(${SC_SDK_FRAMELESS} "frameless" "Qt frameless helper"
+sc_add_qt_project(${SC_SDK_FRAMELESS} "Qt frameless helper"
 	QT_COMPONENTS Widgets
 )
 

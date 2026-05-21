@@ -1,6 +1,7 @@
 set(SC_SDK_UTILS 		"ScUtils")
 set(SC_SDK_NETWORK 		"ScNetwork")
 set(SC_SDK_FRAMELESS 	"QtFrameless")
+set(SC_SDK_QT_UTILS 	"QtUtils")
 
 function(sc_get_flatmp_value KEY VALUE_VAR)
 	set(${VALUE_VAR} "" PARENT_SCOPE)

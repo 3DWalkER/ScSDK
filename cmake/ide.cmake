@@ -45,29 +45,49 @@ endfunction()
 		- filter_regx : Regex string used to exclude matching files.
 ]]
 function(sc_collect_files output_var group_name dir file_exts filter_regx)
-	set(files "")
-	
-	file(GLOB subdirs LIST_DIRECTORIES true "${dir}/*")
-	foreach(subdir ${subdirs})
-		if(NOT IS_DIRECTORY "${subdir}")
-			continue()
-		endif()
+	set(total_files "")
+	_sc_collect_files_rec(total_files "${group_name}" "${dir}" "${dir}" "${file_exts}" "${filter_regx}")
+	set(${output_var} ${total_files} PARENT_SCOPE)
+endfunction()
 
-		sc_collect_filter(temp_files "${subdir}" "${${file_exts}}" "${filter_regx}")
-		list(APPEND files ${temp_files})
-		if(MSVC AND temp_files)
-			get_filename_component(last_name ${subdir} NAME)
-			source_group("${group_name}/${last_name}" FILES ${temp_files})
+
+#[[
+	Private Helper Function: _sc_collect_files_rec
+	Arguments:
+		- total_files_var : Accumulate the variable names that store all files
+		- current_group   : The VS folder path corresponding to the current level
+		- base_dir        : Scan the absolute root directory (used to calculate relative paths)
+		- current_dir     : The absolute path currently being scanned
+]]
+function(_sc_collect_files_rec total_files_var current_group base_dir current_dir file_exts filter_regx)
+	sc_collect_filter(local_files "${current_dir}" "${${file_exts}}" "${filter_regx}")
+	
+	if(local_files)
+		if(MSVC)
+			source_group("${current_group}" FILES ${local_files})
+		endif()
+		set(accumulated_files ${${total_files_var}} ${local_files})
+	else()
+		set(accumulated_files ${${total_files_var}})
+	endif()
+
+	file(GLOB children LIST_DIRECTORIES true "${current_dir}/*")
+	foreach(child ${children})
+		if(IS_DIRECTORY "${child}")
+			get_filename_component(child_name "${child}" NAME)
+			
+			_sc_collect_files_rec(
+				accumulated_files 
+				"${current_group}/${child_name}" 
+				"${base_dir}" 
+				"${child}" 
+				"${file_exts}" 
+				"${filter_regx}"
+			)
 		endif()
 	endforeach()
-	
-	sc_collect_filter(temp_files "${dir}" "${${file_exts}}" "${filter_regx}")
-	list(APPEND files ${temp_files})
-	if(MSVC AND temp_files)
-		source_group("${group_name}" FILES ${temp_files})
-	endif()
-	
-	set(${output_var} ${files} PARENT_SCOPE)
+
+	set(${total_files_var} ${accumulated_files} PARENT_SCOPE)
 endfunction()
 
 
@@ -113,7 +133,7 @@ function(sc_collect_headers)
 	if(ARGN)
 		set(target_dir "${ARGV0}")
 	else()
-		set(target_dir "${SC_PROJECT_DIR}/include/${SC_INCLUDE_DIR}")
+		set(target_dir "${SC_INCLUDE_DIR}")
 	endif()
 
 	sc_make_ext_regex(SC_HEADER_FILTER_REG SC_HEADER_EXTENSIONS)

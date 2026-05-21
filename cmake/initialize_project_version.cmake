@@ -58,7 +58,7 @@ endmacro()
 		- description : Brief description of the project.
 		- [DEPENDS]   : Optional, variadic list of target dependencies or extra libraries to link against.
 ]]
-macro(sc_add_project name inc_dir description)
+macro(sc_add_project name description)
 	# Parse dependencies while keeping backwards compatibility with raw ARGN arguments
 	cmake_parse_arguments(PROJ "" "" "DEPENDS" ${ARGN})
 	if(PROJ_DEPENDS)
@@ -66,9 +66,9 @@ macro(sc_add_project name inc_dir description)
 	else()
 		set(PROJECT_LIBS "${PROJ_UNPARSED_ARGUMENTS}")
 	endif()
-
+	
 	set(SC_PROJECT_DIR ${CMAKE_CURRENT_LIST_DIR})
-	set(SC_INCLUDE_DIR "${inc_dir}")
+	sc_get_unique_subdir(SC_INCLUDE_DIR "${SC_PROJECT_DIR}/include")
 	
 	# Specify the project suffix under Debug configuration
 	if (NOT DEFINED CMAKE_DEBUG_POSTFIX)
@@ -131,7 +131,7 @@ macro(sc_add_project name inc_dir description)
 		endforeach()
 	endif()
 
-	sc_setup_install("${SC_INCLUDE_DIR}")
+	sc_setup_install()
 
 	sc_do_packaging()
 endmacro()
@@ -238,21 +238,20 @@ endmacro()
 	
 	Arguments:
 		- name          : The name of the project and output target.
-		- inc_dir       : The include directory path for public/interface headers.
 		- description   : A brief text description of the project purpose.
 		- [DEPENDS]     : Optional, variadic list of non-Qt library targets.
 		- [QT_COMPONENTS]: Optional, variadic list of requested Qt modules (e.g., Core Widgets).
 ]]
-macro(sc_add_qt_project name inc_dir description)
+macro(sc_add_qt_project name description)
 	# Parse arguments to separate standard dependencies and Qt components
 	cmake_parse_arguments(QT_PROJ "" "" "DEPENDS;QT_COMPONENTS" ${ARGN})
 
 	# Forward to standard project macro
 	if(QT_PROJ_DEPENDS)
-		sc_add_project(${name} ${inc_dir} ${description} DEPENDS ${QT_PROJ_DEPENDS})
+		sc_add_project(${name} ${description} DEPENDS ${QT_PROJ_DEPENDS})
 	else()
 		# Fallback to old behavior if DEPENDS keyword is missing
-		sc_add_project(${name} ${inc_dir} ${description} DEPENDS ${QT_PROJ_UNPARSED_ARGUMENTS})
+		sc_add_project(${name} ${description} DEPENDS ${QT_PROJ_UNPARSED_ARGUMENTS})
 	endif()
 	
 	# Trigger Qt initialization if modules are specified

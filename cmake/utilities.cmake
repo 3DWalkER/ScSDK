@@ -17,11 +17,8 @@ endmacro()
 	Description: 
 		Handles target export installation and automatically copies associated 
 	public header files while explicitly filtering out private header files.
-	
-	Arguments:
-		- inc_dir : Relative path suffix inside 'include/' directory to install from.
 ]]
-macro(sc_setup_install inc_dir)
+macro(sc_setup_install)
 	if(SC_SIMPLE_INSTALL)
 		install(TARGETS ${PROJECT_NAME}
 			EXPORT "${PROJECT_NAME}-targets"
@@ -31,12 +28,13 @@ macro(sc_setup_install inc_dir)
 		)
 	endif()
 
-	install(DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}/include/${inc_dir}" 
+	install(DIRECTORY "${SC_INCLUDE_DIR}" 
 		DESTINATION ${SC_INCLUDE_DIRECTORY}
 		COMPONENT Development
 		FILES_MATCHING
 		PATTERN "*.h"
 		PATTERN "*_p.h" EXCLUDE
+		PATTERN "*_p_*.h" EXCLUDE
 	)
 endmacro()
 
@@ -78,3 +76,36 @@ macro(sc_do_packaging)
 		)
 	endif()
 endmacro()
+
+
+#[[
+	Function: sc_get_unique_subdir
+	Description:
+		Ensures there is one and only one subdirectory under the target directory,
+		and returns its absolute path.
+		If 0 or multiple subdirectories are found, it triggers a FATAL_ERROR.
+	Arguments:
+		- output_var : Name of the variable to store the unique subdirectory's absolute path.
+		- target_dir : The target root directory to scan (e.g., "${CMAKE_CURRENT_SOURCE_DIR}/include").
+]]
+function(sc_get_unique_subdir output_var target_dir)
+	file(GLOB search_result LIST_DIRECTORIES true "${target_dir}/*")
+
+	set(subdirs "")
+	foreach(item ${search_result})
+		if(IS_DIRECTORY "${item}")
+			list(APPEND subdirs "${item}")
+		endif()
+	endforeach()
+
+	list(LENGTH subdirs dir_count)
+	if(dir_count EQUAL 0)
+		message(FATAL_ERROR "Error: No subdirectory found under '${target_dir}'!")
+	elseif(dir_count GREATER 1)
+		message(FATAL_ERROR "Error: Expected exactly 1 subdirectory under '${target_dir}', but found ${dir_count}:\n${subdirs}")
+	endif()
+
+	list(GET subdirs 0 unique_path)
+
+	set(${output_var} "${unique_path}" PARENT_SCOPE)
+endfunction()

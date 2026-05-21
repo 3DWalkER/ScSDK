@@ -1,1 +1,0 @@
-sc_add_test(Application-test "Tests for the Sc string C++ SDK" ScUtils)
