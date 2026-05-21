@@ -62,7 +62,7 @@ macro(sc_do_packaging)
 			@ONLY
 		)
 
-		set(ConfigPackageLocation "${SC_LIBRARY_DIRECTORY}/cmake/${PROJECT_NAME}")
+		set(ConfigPackageLocation "${SC_LIBRARY_DIRECTORY}/cmake")
 		install(EXPORT "${PROJECT_NAME}-targets"
 			FILE "${PROJECT_NAME}-targets.cmake"
 			NAMESPACE ${PROJECT_NAME}::

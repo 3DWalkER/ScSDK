@@ -6,8 +6,7 @@ sc_load_external_deps()
 
 # Define main project utility library with dependencies
 sc_add_project(${SC_SDK_UTILS} "scutils" "utility library for the Sc C++ SDK"
-	cjson
-	spdlog
+	DEPENDS cjson spdlog
 )
 
 # Add bundled fmtlib source file from spdlog

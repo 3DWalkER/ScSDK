@@ -20,9 +20,11 @@ function(sc_collect_filter output_var dir file_exts filter_regx)
 		list(APPEND files ${temp_files})
 	endforeach()
 
-	# CRITICAL FIX: Safe string comparison prevents syntax errors when regex is empty
-	if(filter_regx AND NOT "${filter_regx}" STREQUAL "")
-		list(FILTER files EXCLUDE REGEX "${filter_regx}")
+	if(filter_regx)
+		list(REMOVE_ITEM files "")
+		if(files)
+			list(FILTER files EXCLUDE REGEX "${filter_regx}")
+		endif()
 	endif()
 
 	set(${output_var} ${files} PARENT_SCOPE)
@@ -44,7 +46,6 @@ endfunction()
 ]]
 function(sc_collect_files output_var group_name dir file_exts filter_regx)
 	set(files "")
-	set(last_name "")
 	
 	file(GLOB subdirs LIST_DIRECTORIES true "${dir}/*")
 	foreach(subdir ${subdirs})
@@ -52,7 +53,6 @@ function(sc_collect_files output_var group_name dir file_exts filter_regx)
 			continue()
 		endif()
 
-		# Note: file_exts is passed as a variable containing a list, dereferenced via "${file_exts}"
 		sc_collect_filter(temp_files "${subdir}" "${${file_exts}}" "${filter_regx}")
 		list(APPEND files ${temp_files})
 		if(MSVC AND temp_files)
@@ -110,16 +110,15 @@ endfunction()
 function(sc_collect_headers)
 	set(SC_HEADER_EXTENSIONS "h" "hpp")
 	
-	# Check if user provided a custom directory path
 	if(ARGN)
 		set(target_dir "${ARGV0}")
 	else()
 		set(target_dir "${SC_PROJECT_DIR}/include/${SC_INCLUDE_DIR}")
 	endif()
 
-	sc_collect_files(temp_headers "Header Files" "${target_dir}" SC_HEADER_EXTENSIONS "")
+	sc_make_ext_regex(SC_HEADER_FILTER_REG SC_HEADER_EXTENSIONS)
+	sc_collect_files(temp_headers "Header Files" "${target_dir}" SC_HEADER_EXTENSIONS "${SC_HEADER_FILTER_REG}")
 	
-	# Expose results to parent scope for macro/project visibility
 	set(SC_HEADERS_ALL "${temp_headers}" PARENT_SCOPE)
 endfunction()
 
@@ -136,18 +135,15 @@ endfunction()
 function(sc_collect_sources)
 	set(SC_SOURCE_EXTENSIONS "c" "cpp")
 	
-	# Check if user provided a custom directory path
 	if(ARGN)
 		set(target_dir "${ARGV0}")
 	else()
 		set(target_dir "${SC_PROJECT_DIR}/src")
 	endif()
 
-	# Generate platform filters and scan
 	sc_make_ext_regex(SC_SOURCE_FILTER_REG SC_SOURCE_EXTENSIONS)
-	sc_collect_files(temp_sources "Source Files" "${target_dir}" SC_SOURCE_EXTENSIONS SC_SOURCE_FILTER_REG)
+	sc_collect_files(temp_sources "Source Files" "${target_dir}" SC_SOURCE_EXTENSIONS "${SC_SOURCE_FILTER_REG}")
 	
-	# Expose results to parent scope for macro/project visibility
 	set(SC_SOURCES_ALL "${temp_sources}" PARENT_SCOPE)
 endfunction()
 
@@ -163,11 +159,14 @@ endfunction()
 		- sources_dir : (Optional) The directory to search for sources.
 ]]
 function(sc_collect_all_files)
-	# Directly forward arguments; empty arguments naturally trigger default fallbacks
-	sc_collect_headers("${ARGV0}")
-	sc_collect_sources("${ARGV1}")
+	if(ARGN)
+		sc_collect_headers("${ARGV0}")
+		sc_collect_sources("${ARGV1}")
+	else()
+		sc_collect_headers("")
+		sc_collect_sources("")
+	endif()
 
-	# Elevate the collected file lists to the parent scope
 	set(SC_HEADERS_ALL "${SC_HEADERS_ALL}" PARENT_SCOPE)
 	set(SC_SOURCES_ALL "${SC_SOURCES_ALL}" PARENT_SCOPE)
 endfunction()
