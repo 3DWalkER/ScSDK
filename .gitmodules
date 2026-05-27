@@ -1,3 +1,6 @@
 [submodule "src/ScNetwork/deps/aws-sdk-cpp"]
 	path = src/ScNetwork/deps/aws-sdk-cpp
 	url = https://github.com/aws/aws-sdk-cpp.git
+[submodule "src/ScNetwork/deps/HP-Socket"]
+	path = src/ScNetwork/deps/HP-Socket
+	url = https://github.com/ldcsaa/HP-Socket.git
