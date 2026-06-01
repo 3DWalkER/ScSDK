@@ -66,7 +66,7 @@ macro(sc_add_project name description)
 	else()
 		set(PROJECT_LIBS "${PROJ_UNPARSED_ARGUMENTS}")
 	endif()
-	
+
 	set(SC_PROJECT_DIR ${CMAKE_CURRENT_LIST_DIR})
 	sc_get_unique_subdir(SC_INCLUDE_DIR "${SC_PROJECT_DIR}/include")
 	
@@ -105,7 +105,7 @@ macro(sc_add_project name description)
 	string(TOLOWER ${name} SC_OUTPUT_NAME)
 	set_target_properties(${PROJECT_NAME} PROPERTIES
 		OUTPUT_NAME "${SC_OUTPUT_NAME}"
-		DESCRIPTION "${PROJECT_DESCRIPTION}"
+		DESCRIPTION "${description}"
 	)
 	
 	# Inject clean build/install interface paths safely into the target property
@@ -113,6 +113,14 @@ macro(sc_add_project name description)
         $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
         $<INSTALL_INTERFACE:include>
     )
+	
+	sc_get_dependencies_for_sdk(${PROJECT_NAME} DEPENDENCY_LIST)
+	if(DEPENDENCY_LIST)
+		STRING(REPLACE "," ";" LIST_RESULT ${DEPENDENCY_LIST})
+		foreach(DEPENDENCY IN LISTS LIST_RESULT)
+			list(APPEND PROJECT_LIBS "${DEPENDENCY}")
+		endforeach()
+	endif()
 	
 	# Link dependencies strictly as PRIVATE to hide implementation details
 	if(PROJECT_LIBS)

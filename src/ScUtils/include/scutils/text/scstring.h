@@ -2,13 +2,16 @@
 #define SCSTRING_H
 
 #include "scutils/text/scstringdata.h"
+#include "scutils/text/scstringview.h"
+
+#include <ctype.h>
 
 class SC_API_EXPORT ScString
 {
 public:
 	ScString() = default;
-	ScString(const char* unicode, size_t size = -1);
-	ScString(const std::string& str);
+	ScString(const char* c, size_t size = -1);
+	ScString(char c);
 	ScString(const ScString& other) noexcept : d(other.d) {}
 	inline ScString(ScString&& other) noexcept : d(std::move(other.d)) {}
 	~ScString() = default;
@@ -33,32 +36,35 @@ public:
 	ScString& append(const char* s, const size_t n);
 	ScString& append(const ScString& str, const size_t pos, const size_t n);
 	ScString& append(const ScString& str) { return append(str.data(), str.size()); }
+	void push_back(const char c) { append(&c, 1); }
 
-	int compare(const char* s, const size_t n, Sc::CaseSensitivity cs = Sc::CaseSensitive) const;
+	int compare(const char* s, const size_t n, Sc::CaseSensitivity cs = Sc::CaseSensitive) const {
+		return SC_DETAIL::compareStrings(ScStringView(s, n), *this, cs);
+	}
 	int compare(const ScString& str, Sc::CaseSensitivity cs = Sc::CaseSensitive) const { return compare(str.data(), str.size(), cs); }
 	static int compare(const ScString& lhs, const ScString& rhs, Sc::CaseSensitivity cs = Sc::CaseSensitive) { return lhs.compare(rhs, cs); }
 
-	size_t indexOf(const char* s, size_t nsize, size_t pos, Sc::CaseSensitivity cs = Sc::CaseSensitive) const;
+	size_t indexOf(const char* s, size_t nsize, size_t pos, Sc::CaseSensitivity cs = Sc::CaseSensitive) const { return SC_DETAIL::indexOf(*this, pos, ScStringView(s, nsize), cs); }
 	size_t indexOf(const ScString& lhs, size_t pos = 0, Sc::CaseSensitivity cs = Sc::CaseSensitive) const { return indexOf(lhs.data(), lhs.size(), pos, cs); }
 	size_t indexOf(char c, size_t pos = 0, Sc::CaseSensitivity cs = Sc::CaseSensitive) const { return indexOf(&c, 1, pos, cs); }
 	size_t indexOf(const char* s, size_t pos = 0, Sc::CaseSensitivity cs = Sc::CaseSensitive) const { return indexOf(s, SC_DETAIL::strlen_s(s), pos, cs); }
 
-	size_t lastIndexOf(const char* s, size_t nsize, size_t pos, Sc::CaseSensitivity cs = Sc::CaseSensitive) const;
+	size_t lastIndexOf(const char* s, size_t nsize, size_t pos, Sc::CaseSensitivity cs = Sc::CaseSensitive) const { return SC_DETAIL::lastIndexOf(*this, pos, ScStringView(s, nsize), cs); }
 	size_t lastIndexOf(const ScString& lhs, size_t pos = -1, Sc::CaseSensitivity cs = Sc::CaseSensitive) const { return lastIndexOf(lhs.data(), lhs.size(), pos, cs); }
 	size_t lastIndexOf(const char* s, size_t pos = -1, Sc::CaseSensitivity cs = Sc::CaseSensitive) const { return lastIndexOf(s, SC_DETAIL::strlen_s(s), pos, cs); }
 	size_t lastIndexOf(char c, size_t pos = -1, Sc::CaseSensitivity cs = Sc::CaseSensitive) const { return lastIndexOf(&c, 1, pos, cs); }
 
 	bool contains(char ch, Sc::CaseSensitivity cs = Sc::CaseSensitive) { return npos != indexOf(ch, 0, cs); }
 
-	bool startsWith(const char* s, size_t nsize, Sc::CaseSensitivity cs = Sc::CaseSensitive) const;
+	bool startsWith(const char* s, size_t nsize, Sc::CaseSensitivity cs = Sc::CaseSensitive) const { return SC_DETAIL::startsWith(*this, ScStringView(s, nsize), cs); }
 	bool startsWith(const ScString& s, Sc::CaseSensitivity cs = Sc::CaseSensitive) const { return startsWith(s.data(), s.size(), cs); }
 	bool startsWith(const char* s, Sc::CaseSensitivity cs = Sc::CaseSensitive) const { return startsWith(s, SC_DETAIL::strlen_s(s), cs); }
-	bool startsWith(char c, Sc::CaseSensitivity cs = Sc::CaseSensitive) const;
+	bool startsWith(char c, Sc::CaseSensitivity cs = Sc::CaseSensitive) const { return SC_DETAIL::startsWith(*this, c, cs); }
 
-	bool endsWith(const char* s, size_t nsize, Sc::CaseSensitivity cs = Sc::CaseSensitive) const;
+	bool endsWith(const char* s, size_t nsize, Sc::CaseSensitivity cs = Sc::CaseSensitive) const { return SC_DETAIL::endsWith(*this, ScStringView(s, nsize), cs); }
 	bool endsWith(const ScString& s, Sc::CaseSensitivity cs = Sc::CaseSensitive) const { return endsWith(s.data(), s.size(), cs); }
 	bool endsWith(const char* s, Sc::CaseSensitivity cs = Sc::CaseSensitive) const { return endsWith(s, SC_DETAIL::strlen_s(s), cs); }
-	bool endsWith(char c, Sc::CaseSensitivity cs = Sc::CaseSensitive) const;
+	bool endsWith(char c, Sc::CaseSensitivity cs = Sc::CaseSensitive) const { return SC_DETAIL::endsWith(*this, c, cs); }
 
 	ScString mid(size_t pos = 0, size_t nsize = npos);
 
@@ -66,6 +72,7 @@ public:
 	typedef const char* const_iterator;
 	typedef std::reverse_iterator<iterator> reverse_iterator;
 	typedef std::reverse_iterator<const_iterator> const_reverse_iterator;
+	typedef char value_type;
 
 	iterator begin() { return d.mutableData(); }
 	const_iterator begin() const { return d.data(); }
@@ -94,8 +101,13 @@ public:
 
 	int toInt(bool* ok = nullptr, int base = 10);
 
-	ScString trimmed() const&;
 	ScString trimmed() const&&;
+	ScString trimmed() const& { return ScString(*this).trimmed(); }
+
+	ScString toLower() const&&;
+	ScString toLower() const& { return ScString(*this).toLower(); }
+	ScString toUpper() const&&;
+	ScString toUpper() const& { return ScString(*this).toUpper(); }
 
 	static constexpr auto npos{ ScStringData::npos };
 
@@ -186,8 +198,18 @@ inline bool operator==(const ScString& lhs, const ScString& rhs) {
 	return lhs.size() == rhs.size() && 0 == lhs.compare(rhs);
 }
 
-inline ScString ScString::trimmed() const& {
-	return ScString(*this).trimmed();
+inline ScString ScString::toLower() const&&
+{
+	ScString s(data(), size());
+	std::transform(s.begin(), s.end(), s.begin(), tolower);
+	return ScString(s);
+}
+
+inline ScString ScString::toUpper() const&&
+{
+	ScString s(data(), size());
+	std::transform(s.begin(), s.end(), s.begin(), toupper);
+	return ScString(s);
 }
 
 namespace std {

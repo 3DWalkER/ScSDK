@@ -227,6 +227,20 @@ constexpr inline const T& scBound(const T& min, const T& val, const T& max) { re
 
 class ScString;
 
+#ifdef SC_CC_MSVC
+namespace std
+{
+	template <class CharT> struct char_traits;
+	template <class T> class allocator;
+	template <class CharT, class Traits, class Allocator>
+	class basic_string;
+
+	typedef basic_string<char, char_traits<char>, allocator<char>> string;
+}
+#else
+#	include <iosfwd>
+#endif
+
 #if !(defined(_DEBUG) || !defined(NDEBUG))
 #	define SC_NO_DEBUG
 #endif

@@ -1,0 +1,1 @@
+sc_add_test(ScWebSocketServer "Tests for the Sc JSON C++ SDK" ScNetwork ScUtils)

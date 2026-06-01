@@ -1,17 +1,13 @@
 #include "scutils/text/scstring.h"
 #include "scutils/utils/scconfig.h"
 #include "scutils/text/scstringlist.h"
+#include "scutils/io/sclogger.h"
 
 #include <string>
 
 int main()
 {
 	do {
-		char linkType[13]{ }, net_Type[16]{ };
-
-		ScString str(net_Type);
-		ScStringList list;
-		list.append(net_Type);
-		auto size = list[0].size();
+		SC_INFO("Test");
 	} while (1);
 }

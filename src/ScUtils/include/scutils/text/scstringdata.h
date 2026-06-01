@@ -1,8 +1,7 @@
 #ifndef SCSTRINGDATA_H
 #define SCSTRINGDATA_H
 
-#include "scutils/utils/scnamespace.h"
-#include <string>
+#include "scutils/text/scstringalgorithms.h"
 
 typedef char16_t scunicodechar;
 SC_STATIC_ASSERT_X(sizeof(scunicodechar) == 2, "scunicodechar must typedef an integral type of size 2");
@@ -129,55 +128,5 @@ inline void ScStringData::swap(ScStringData& rhs)
 	ml = rhs.ml;
 	rhs.ml = t;
 }
-
-SC_BEGIN_NAMESPACE
-
-SC_BEGIN_DETAIL_NAMESPACE
-
-template <class Pod>
-inline void podCopy(const Pod* b, const Pod* e, Pod* d)
-{
-	SC_ASSERT(b != nullptr);
-	SC_ASSERT(e != nullptr);
-	SC_ASSERT(d != nullptr);
-	SC_ASSERT(e >= b);
-	SC_ASSERT(d >= e || d + (e - b) <= b);
-	memcpy(d, b, (e - b) * sizeof(Pod));
-}
-
-template <class Pod>
-inline void podMove(const Pod* b, const Pod* e, Pod* d)
-{
-	SC_ASSERT(b != nullptr);
-	SC_ASSERT(e != nullptr);
-	SC_ASSERT(d != nullptr);
-	SC_ASSERT(e >= b);
-	memmove(d, b, (e - b) * sizeof(*b));
-}
-
-inline size_t strlen_s(const char* str) {
-	return str ? strlen(str) : 0;
-}
-
-template <size_t N>
-inline void strcpy_s(char(&dst)[N], const char *data, size_t length) {
-	size_t copylen = length > N - 1 ? N - 1 : length;
-	std::copy(data, data + copylen, dst);
-	dst[copylen] = '\0';
-}
-
-template <size_t N>
-inline void strcpy_s(char(&dst)[N], const ScString& src) {
-	SC_DETAIL::strcpy_s(dst, src.data(), src.size());
-}
-
-template <size_t N>
-inline void strcpy_s(char(&dst)[N], const std::string& src) {
-	SC_DETAIL::strcpy_s(dst, src.data(), src.size());
-}
-
-SC_END_DETAIL_NAMESPACE
-
-SC_END_NAMESPACE
 
 #endif // SCSTRINGLITERAL_H
