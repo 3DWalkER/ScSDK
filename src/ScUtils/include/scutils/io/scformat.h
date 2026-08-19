@@ -18,6 +18,16 @@ struct fmt::formatter<ScString> : fmt::formatter<fmt::string_view> {
 
 SC_BEGIN_NAMESPACE
 
+template <typename T>
+inline size_t formatted_size(const T& v) {
+	return fmt::formatted_size("{}", v);
+}
+
+template <typename T, typename... Args>
+inline size_t formatted_size(const T& v, const Args... args) {
+	return formatted_size(v) + formatted_size(args...);
+}
+
 template <typename... Args>
 inline ScString format(const ScString& fmt, Args &&...args) {
 	try {
