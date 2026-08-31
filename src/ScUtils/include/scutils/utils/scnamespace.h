@@ -1,4 +1,4 @@
-#ifndef SCNAMESPACE_H
+ï»¿#ifndef SCNAMESPACE_H
 #define SCNAMESPACE_H
 
 #include "scutils/scglobal.h"
@@ -6,38 +6,47 @@
 SC_BEGIN_NAMESPACE
 
 /**
- * @brief The CaseSensitivity enum ×Ö·û´®´óĞ¡Ğ´Æ¥ÅäÃ¶¾Ù
+ * @brief The CaseSensitivity enum å­—ç¬¦ä¸²å¤§å°å†™åŒ¹é…æšä¸¾
  */
 enum CaseSensitivity
 {
-	CaseInsensitive,	/*< ²»Çø·Ö´óĞ¡Ğ´ */
-	CaseSensitive		/*< Çø·Ö´óĞ¡Ğ´ */
+	CaseInsensitive,	/*< ä¸åŒºåˆ†å¤§å°å†™ */
+	CaseSensitive		/*< åŒºåˆ†å¤§å°å†™ */
 };
 
 /**
- * @brief The LoggerLevel enum ÈÕÖ¾¼¶±ğ
+ * @brief The TimeType enum äº‹ä»¶ç±»å‹
+ */
+enum class TimeType : scuint8
+{
+	Local,	/*< æœ¬åœ°æ—¶é—´ */
+	UTC		/*< UTCæ—¶é—´ */
+};
+
+/**
+ * @brief The LoggerLevel enum æ—¥å¿—çº§åˆ«
  */
 enum class LoggerLevel : scuint8
 {
-	Off,		/*< ¹Ø±Õ */
-	Trace,		/*< ×·Ëİ */
-	Debug,		/*< µ÷ÊÔ */
-	Info,		/*< ĞÅÏ¢ */
-	Warn,		/*< ¾¯¸æ */
-	Error,		/*< ´íÎó */
-	Critical	/*< ÖÂÃü´íÎó */
+	Off,		/*< å…³é—­ */
+	Trace,		/*< è¿½æº¯ */
+	Debug,		/*< è°ƒè¯• */
+	Info,		/*< ä¿¡æ¯ */
+	Warn,		/*< è­¦å‘Š */
+	Error,		/*< é”™è¯¯ */
+	Critical	/*< è‡´å‘½é”™è¯¯ */
 };
 
 /**
- * @brief The LoggerType enum ÈÕÖ¾Êä³öÀàĞÍ
+ * @brief The LoggerType enum æ—¥å¿—è¾“å‡ºç±»å‹
  */
 enum class LoggerType : scuint8
 {
-	Console,    /*< Êä³öµ½¿ØÖÆÌ¨ */
-	Basic,      /*< ´æ´¢µ½Ò»¸öÎÄ¼ş */
-	Rotating,   /*< °´ÈÕÖ¾´óĞ¡Óë×î´óÎÄ¼şÊı½øĞĞ»Ø¹ö */
-	Daily,      /*< °´ÈÕÆÚ´æ´¢, ÄêÔÂÈÕ */
-	Hourly      /*< °´Ğ¡Ê±´æ´¢ */
+	Console,    /*< è¾“å‡ºåˆ°æ§åˆ¶å° */
+	Basic,      /*< å­˜å‚¨åˆ°ä¸€ä¸ªæ–‡ä»¶ */
+	Rotating,   /*< æŒ‰æ—¥å¿—å¤§å°ä¸æœ€å¤§æ–‡ä»¶æ•°è¿›è¡Œå›æ»š */
+	Daily,      /*< æŒ‰æ—¥æœŸå­˜å‚¨, å¹´æœˆæ—¥ */
+	Hourly      /*< æŒ‰å°æ—¶å­˜å‚¨ */
 };
 
 SC_END_NAMESPACE

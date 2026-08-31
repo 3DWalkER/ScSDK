@@ -29,14 +29,9 @@ ScLoggerPtr ScLoggerFactory::logger(const ScString& loggerName)
 		it = d->g_loggerMap.find(loggerName);
 		if (d->g_loggerMap.end() == it)
 		{
-			ScLogger* pLogger = new ScLogger();
-			pLogger->d_func()->m_pLogger = d->createSpdlog(loggerName);
-			pLogger->setLevel(Sc::LoggerLevel::Trace);
-			ScLoggerPtr loggerPtr = ScLoggerPtr(pLogger, [](ScLogger *p) {
-				delete p;
-			});
-			d->g_loggerMap[loggerName] = loggerPtr;
-			return loggerPtr;
+			ScLoggerPtr logger = d->createLogger(loggerName);
+			d->g_loggerMap[loggerName] = logger;
+			return logger;
 		}
 	}
 	return it->second;
@@ -44,5 +39,17 @@ ScLoggerPtr ScLoggerFactory::logger(const ScString& loggerName)
 
 ScLoggerPtr ScLoggerFactory::defaultLogger()
 {
-	return nullptr;
+	ScLoggerPtr& logger = ScLoggerPrivate::g_defaultLogger;
+	if (!logger)
+	{
+		std::lock_guard<std::mutex> locker(ScLoggerFactoryData::g_factoryMutex);
+		if (!logger)
+		{
+			ScLoggerFactoryData *&pData = ScLoggerPrivate::g_factoryData;
+			if (!pData)
+				pData = new ScLoggerFactoryData();
+			logger = pData->createLogger();
+		}
+	}
+	return logger;
 }

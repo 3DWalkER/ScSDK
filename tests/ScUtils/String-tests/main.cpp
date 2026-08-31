@@ -13,12 +13,27 @@ int main()
 	do {
 		ScLoggerFactory* pFactory = ScLoggerFactoryBuilder("Xde", "D:/Temp", "log.html")
 			.setLoggerType(Sc::LoggerType::Console)
+			.setLoggerLevel(Sc::LoggerLevel::Trace)
+			.setPattern("%^%Y-%m-%d %H:%M:%S %a [%8l]%$")
+			.setLevelPattern({ { Sc::LoggerLevel::Info, "ÐÅÏ¢" },{ Sc::LoggerLevel::Warn, "¾¯¸æ" } })
 			.build();
-;
+
+		ScLoggerFactoryBuilder("Xde", "D:/Temp", "log.html")
+			.setLoggerType(Sc::LoggerType::Console)
+			.setLoggerLevel(Sc::LoggerLevel::Trace)
+			.buildDefault();
+
 		ScLoggerPtr logger = pFactory->logger("Test");
-		logger->setLevel(Sc::LoggerLevel::Trace);
-		SC_LOGGER_INFO_IN(logger, "test =", 2, "test2 =", 2);
-		SC_LOGGER_INFO_OUT(logger);
+		SC_LOGGER_TRACE(logger, "this is {}", "test");
+		SC_LOGGER_DEBUG(logger, "this is {}", "test");
+		SC_LOGGER_INFO(logger, "this is {}", "test");
+		SC_LOGGER_WARN(logger, "this is {}", "test");
+		SC_LOGGER_ERROR(logger, "this is {}", "test");
+		SC_LOGGER_CRITICAL(logger, "this is {}", "test");
+		//ScLoggerPtr logger = pFactory->logger("Test");
+		//logger->setLevel(Sc::LoggerLevel::Trace);
+		//SC_LOGGER_INFO_IN(logger, "test =", 2, "test2 =", 2);
+		//SC_LOGGER_INFO_OUT(logger);
 		//SC_LOGGER_TRACE_IN(logger);
 		//SC_LOGGER_TRACE(logger, "{}", "test");
 		//SC_LOGGER_DEBUG(logger, "{}", "test");

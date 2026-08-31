@@ -41,7 +41,7 @@ private:
 #if SC_LOGGER_ACTIVE_LEVEL <= SC_LOGGER_LEVEL_TRACE
 #	define SC_LOGGER_TRACE(logger, msg, ...) \
 		logger->trace(msg, __VA_ARGS__);
-#	define SC_TRACE(msg, ...) SC_LOGGER_TRACE(SC_LOGGER_DEFAULT)
+#	define SC_TRACE(msg, ...) SC_LOGGER_TRACE(SC_LOGGER_DEFAULT, __VA_ARGS__)
 #else
 #	define SC_LOGGER_TRACE(logger, msg, ...) (void)0;
 #	define SC_TRACE(msg, ...) (void)0;
@@ -50,7 +50,7 @@ private:
 #if SC_LOGGER_ACTIVE_LEVEL <= SC_LOGGER_LEVEL_DEBUG
 #	define SC_LOGGER_DEBUG(logger, msg, ...) \
 		logger->debug(msg, __VA_ARGS__);
-#	define SC_DEBUG(msg, ...) SC_LOGGER_DEBUG(SC_LOGGER_DEFAULT)
+#	define SC_DEBUG(msg, ...) SC_LOGGER_DEBUG(SC_LOGGER_DEFAULT, __VA_ARGS__)
 #else
 #	define SC_LOGGER_DEBUG(logger, msg, ...) (void)0;
 #	define SC_DEBUG(msg, ...) (void)0;
@@ -59,7 +59,7 @@ private:
 #if SC_LOGGER_ACTIVE_LEVEL <= SC_LOGGER_LEVEL_INFO
 #	define SC_LOGGER_INFO(logger, msg, ...) \
 		logger->info(msg, __VA_ARGS__);
-#	define SC_INFO(msg, ...) SC_LOGGER_INFO(SC_LOGGER_DEFAULT)
+#	define SC_INFO(msg, ...) SC_LOGGER_INFO(SC_LOGGER_DEFAULT, __VA_ARGS__)
 #else
 #	define SC_LOGGER_INFO(logger, msg, ...) (void)0;
 #	define SC_INFO(msg, ...) (void)0;
@@ -68,7 +68,7 @@ private:
 #if SC_LOGGER_ACTIVE_LEVEL <= SC_LOGGER_LEVEL_WARN
 #	define SC_LOGGER_WARN(logger, msg, ...) \
 		logger->warning(msg, __VA_ARGS__);
-#	define SC_WARN(msg, ...) SC_LOGGER_WARN(SC_LOGGER_DEFAULT)
+#	define SC_WARN(msg, ...) SC_LOGGER_WARN(SC_LOGGER_DEFAULT, __VA_ARGS__)
 #else
 #	define SC_LOGGER_WARN(logger, msg, ...) (void)0;
 #	define SC_WARN(msg, ...) (void)0;
@@ -77,7 +77,7 @@ private:
 #if SC_LOGGER_ACTIVE_LEVEL <= SC_LOGGER_LEVEL_ERROR
 #	define SC_LOGGER_ERROR(logger, msg, ...) \
 		logger->error(msg, __VA_ARGS__);
-#	define SC_ERROR(msg, ...) SC_LOGGER_ERROR(SC_LOGGER_DEFAULT)
+#	define SC_ERROR(msg, ...) SC_LOGGER_ERROR(SC_LOGGER_DEFAULT, __VA_ARGS__)
 #else
 #	define SC_LOGGER_ERROR(logger, msg, ...) (void)0;
 #	define SC_ERROR(msg, ...) (void)0;
@@ -86,7 +86,7 @@ private:
 #if SC_LOGGER_ACTIVE_LEVEL <= SC_LOGGER_LEVEL_CRITICAL
 #	define SC_LOGGER_CRITICAL(logger, msg, ...) \
 		logger->critical(msg, __VA_ARGS__);
-#	define SC_CRITICAL(msg, ...) SC_LOGGER_CRITICAL(SC_LOGGER_DEFAULT)
+#	define SC_CRITICAL(msg, ...) SC_LOGGER_CRITICAL(SC_LOGGER_DEFAULT, __VA_ARGS__)
 #else
 #	define SC_LOGGER_CRITICAL(logger, msg, ...) (void)0;
 #	define SC_CRITICAL(msg, ...) (void)0;

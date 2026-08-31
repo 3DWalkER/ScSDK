@@ -3,8 +3,6 @@
 #include "scutils/io/scloggerfactory.h"
 #include "scutils/io/sclogger_p.h"
 
-#include <mutex>
-
 ScLoggerFactoryBuilder::ScLoggerFactoryBuilder(ScString factoryName, ScString path, ScString fileName)
 	: d(new ScLoggerFactoryData())
 {
@@ -22,6 +20,13 @@ ScLoggerFactoryBuilder& ScLoggerFactoryBuilder::setLoggerType(Sc::LoggerType typ
 {
 	if (d)
 		d->loggerType = type;
+	return *this;
+}
+
+ScLoggerFactoryBuilder& ScLoggerFactoryBuilder::setLoggerLevel(Sc::LoggerLevel level)
+{
+	if (d)
+		d->loggerLevel = level;
 	return *this;
 }
 
@@ -46,6 +51,40 @@ ScLoggerFactoryBuilder& ScLoggerFactoryBuilder::setRoatingMaxFileCount(int count
 	return *this;
 }
 
+ScLoggerFactoryBuilder& ScLoggerFactoryBuilder::setPattern(ScString pattern, Sc::TimeType timeType, ScString eol)
+{
+	if (d)
+	{
+		d->isPatternEnabled = true;
+		d->pattern = std::move(pattern);
+		d->timeType = ScLoggerFactoryData::toSpdlogTimeType(timeType);
+		d->eol = eol;
+	}
+	return *this;
+}
+
+ScLoggerFactoryBuilder& ScLoggerFactoryBuilder::setLevelPattern(ScLevelNames levelNames)
+{
+	if (d && !levelNames.empty())
+	{
+		d->isPatternEnabled = true;
+		d->levelNames = std::move(levelNames);
+		spdlog::level::level_enum level;
+		for (const auto& levelName : d->levelNames)
+		{
+			level = ScLoggerFactoryData::toSpdlogLevel(levelName.first);
+			d->spdlogLevelNames[level] = spdlog::string_view_t(levelName.second.data(), levelName.second.size());
+		}
+		d->customFlags['l'] = spdlog::details::make_unique<ScLevelFormatter>(d->spdlogLevelNames);
+	}
+	return *this;
+}
+
+ScLoggerFactoryBuilder& ScLoggerFactoryBuilder::addSink(ScSinkCallback callback)
+{
+	return *this;
+}
+
 ScLoggerFactory* ScLoggerFactoryBuilder::build()
 {
 	auto &factory = ScLoggerFactoryData::g_factory;
@@ -54,9 +93,37 @@ ScLoggerFactory* ScLoggerFactoryBuilder::build()
 		std::lock_guard<std::mutex> locker(ScLoggerFactoryData::g_factoryMutex);
 		if (!factory)
 		{
+			if (d->isPatternEnabled)
+			{
+				d->patternFormatter = spdlog::details::make_unique<spdlog::pattern_formatter>(
+					d->pattern.data(), d->timeType, d->eol.data(), std::move(d->customFlags)
+				);
+			}
+
 			factory = new ScLoggerFactory(d);
 			d = nullptr;
 		}
 	}
 	return factory;
+}
+
+void ScLoggerFactoryBuilder::buildDefault()
+{
+	auto& data = ScLoggerPrivate::g_factoryData;
+	if (!data)
+	{
+		std::lock_guard<std::mutex> locker(ScLoggerFactoryData::g_factoryMutex);
+		if (!data)
+		{
+			if (d->isPatternEnabled)
+			{
+				d->patternFormatter = spdlog::details::make_unique<spdlog::pattern_formatter>(
+					d->pattern.data(), d->timeType, d->eol.data(), std::move(d->customFlags)
+				);
+			}
+
+			data = d;
+			d = nullptr;
+		}
+	}
 }

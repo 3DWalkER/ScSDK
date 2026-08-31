@@ -90,6 +90,7 @@ private:
 
 	ScLoggerPrivate* d_ptr;
 	friend class ScLoggerFactory;
+	friend class ScLoggerFactoryData;
 };
 
 SC_BEGIN_NAMESPACE
@@ -105,9 +106,9 @@ ScString joinHelper(std::true_type, Args &&...args)
 template <typename... Args>
 ScString joinHelper(std::false_type, Args &&...args)
 {
+	ScString result;
 	SC_CONSTEXPR char prefix[] = " with parameters:";
 	SC_CONSTEXPR size_t prefixLength = sizeof(prefix) - 1;
-	ScString result;
 	const size_t size = Sc::formatted_size(std::forward<Args>(args)...) + sizeof...(Args) + prefixLength;
 	result.reserve(size);
 	result.append(prefix, prefixLength);
