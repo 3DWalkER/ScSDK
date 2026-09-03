@@ -59,7 +59,7 @@ private:
 	void unshare(size_t minCapacity = 0);
 
 	int smallSize() const;
-	void setSmallSize(int size);
+	inline void setSmallSize(int size);
 
 	struct ScMediumLargeString
 	{

@@ -31,7 +31,7 @@ public:
 	}
 
 private:
-	SC_ATTR_GUN_COLD SC_NEVER_INLINE SC_EXPORT static bool getSlow() noexcept
+	SC_GUN_COLD SC_NEVER_INLINE SC_EXPORT static bool getSlow() noexcept
 	{
 		static bool rv = [] {
 			auto v = Initializer{}();

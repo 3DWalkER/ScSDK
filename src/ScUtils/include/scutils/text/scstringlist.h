@@ -57,7 +57,7 @@ public:
 	const_reverse_iterator rend() const noexcept { return d->list.rend(); }
 	const_reverse_iterator crend() const noexcept { return rend(); }
 
-	const ScString& at(size_t i) const;
+	inline const ScString& at(size_t i) const;
 	const ScString& operator[](size_t i) const { return at(i); }
 	ScString& operator[](size_t i);
 

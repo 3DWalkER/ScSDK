@@ -105,9 +105,9 @@ public:
 	ScString trimmed() const&&;
 	ScString trimmed() const& { return ScString(*this).trimmed(); }
 
-	ScString toLower() const&&;
+	inline ScString toLower() const&&;
 	ScString toLower() const& { return ScString(*this).toLower(); }
-	ScString toUpper() const&&;
+	inline ScString toUpper() const&&;
 	ScString toUpper() const& { return ScString(*this).toUpper(); }
 
 	static constexpr auto npos{ ScStringData::npos };

@@ -1,9 +1,7 @@
 ﻿#include "scutils/thread/scthreadpool_p.h"
-
 #include "scutils/thread/scrunnable.h"
 
-#include <iterator>
-#include <memory>
+#include <algorithm>
 
 ScThreadPool::ScThreadPool()
 	: d_ptr(new ScThreadPoolPrivate(this))

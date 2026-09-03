@@ -42,7 +42,7 @@ struct ScAtomicOps
 	}
 
 	template <typename T>
-	static inline T loadAcquire(const std::atomic<T>& value) noexcept {
+	static T loadAcquire(const std::atomic<T>& value) noexcept {
 		return value.load(std::memory_order_acquire);
 	}
 

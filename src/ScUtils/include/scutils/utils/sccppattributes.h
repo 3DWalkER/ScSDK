@@ -31,15 +31,21 @@
 #endif
 
 #if SC_HAS_CPP_ATTRIBUTE(gnu::cold)
-#	define SC_ATTR_GUN_COLD [[gnu::cold]]
+#	define SC_GUN_COLD [[gnu::cold]]
 #else
-#	define SC_ATTR_GUN_COLD
+#	define SC_GUN_COLD
 #endif
 
 #if SC_HAS_CPP_ATTRIBUTE(maybe_unused)
-#   define SC_ATTR_MAYBE_UNUSED [[maybe_unused]]
+#   define SC_MAYBE_UNUSED [[maybe_unused]]
 #else
-#   define SC_ATTR_MAYBE_UNUSED
+#   define SC_MAYBE_UNUSED
+#endif
+
+#if SC_HAS_CPP_ATTRIBUTE(nodiscard)
+#   define SC_NODISCARD [[nodiscard]]
+#else
+#   define SC_NODISCARD
 #endif
 
 #endif // SCCPPATTRIBUTES_H
