@@ -1,11 +1,14 @@
 #include "scutils/text/scstringdata.h"
 
-#include "scutils/utils/scendian.h"
 #include "scutils/utils/scnumeric.h"
 #include "scutils/memory/scmalloc.h"
 #include "scutils/thread/scatomic.h"
 
 #include <stdexcept>
+#include <cstring>
+#include <string>
+
+using std::string;
 
 SC_BEGIN_NAMESPACE
 
@@ -21,45 +24,47 @@ struct RefCounted
 		return offsetof(RefCounted, data);
 	}
 
-	static RefCounted* fromData(Char* p) {
-		return static_cast<RefCounted*>(static_cast<void*>(
+	static RefCounted<Char>* fromData(Char* p) {
+		return static_cast<RefCounted<Char>*>(static_cast<void*>(
 			static_cast<unsigned char*>(static_cast<void*>(p)) - offset()));
 	}
 
 	static size_t refs(Char* p) {
-		return fromData(p)->_ref.loadAcquire();
+		RefCounted<Char>* const dis = fromData(p);
+		return dis->_ref.loadAcquire();
 	}
 
 	static void ref(Char* p) {
-		fromData(p)->_ref.fetchAndAddOrdered(1);
+		RefCounted<Char>* const dis = fromData(p);
+		dis->_ref.fetchAndAddOrdered(1);
 	}
 
 	static void deref(Char* p)
 	{
-		auto const dis = fromData(p);
+		RefCounted<Char> * const dis = fromData(p);
 		size_t oldCnt = dis->_ref.fetchAndSubOrdered(1);
 		SC_ASSERT(oldCnt > 0);
 		if (1 == oldCnt)
 			::free(dis);
 	}
 
-	static RefCounted* create(size_t* size)
+	static RefCounted<Char>* create(size_t* size)
 	{
 		size_t bytes;
 		if (Sc::add_overflow(*size, size_t(1), &bytes))
 			throw std::length_error("");
 
 		if (Sc::muladd_overflow(bytes, sizeof(Char), offset(), &bytes))
-			throw std::length_error("");
+                  throw std::length_error(string());
 
-		const size_t allocSize = Sc::goodMallocSize(bytes);
-		RefCounted* result = static_cast<RefCounted*>(Sc::checkedMalloc(allocSize));
+                const size_t allocSize = Sc::goodMallocSize(bytes);
+		RefCounted<Char>* result = static_cast<RefCounted<Char>*>(Sc::checkedMalloc(allocSize));
 		result->_ref.storeRelease(1);
 		*size = (allocSize - offset()) / sizeof(Char) - 1;
 		return result;
 	}
 
-	static RefCounted* create(const Char* data, size_t* size)
+	static RefCounted<Char>* create(const Char* data, size_t* size)
 	{
 		const size_t effectSize = *size;
 		auto result = create(size);
@@ -68,26 +73,26 @@ struct RefCounted
 		return result;
 	}
 
-	static RefCounted* reallocate(Char * const data, const size_t currSize, const size_t currCapacity, size_t *newCapacity)
+	static RefCounted<Char>* reallocate(Char * const data, const size_t currSize, const size_t currCapacity, size_t *newCapacity)
 	{
 		SC_ASSERT(*newCapacity > 0 && *newCapacity > currSize);
 		size_t bytes;
 		if (Sc::add_overflow(*newCapacity, size_t(1), &bytes))
-			throw std::length_error("");
+			throw std::length_error(std::string());
 
 		if (Sc::muladd_overflow(bytes, sizeof(Char), offset(), &bytes))
-			throw std::length_error("");
+			throw std::length_error(std::string());
 
 		const size_t allocSize = Sc::goodMallocSize(bytes);
-		auto const dis = fromData(data);
+		RefCounted<Char>* const dis = fromData(data);
 		SC_ASSERT(1 == dis->_ref.loadAcquire());
-		auto result = static_cast<RefCounted*>(Sc::smartRealloc(
+		RefCounted<Char>* result = static_cast<RefCounted<Char>*>(Sc::smartRealloc(
 			dis,
 			offset() + (currSize + 1) * sizeof(Char),
 			offset() + (currCapacity + 1) * sizeof(Char),
 			allocSize
 		));
-		SC_ASSERT(1 == dis->_ref.loadAcquire());
+		SC_ASSERT(1 == result->_ref.loadAcquire());
 		*newCapacity = (allocSize - offset()) / sizeof(Char) - 1;
 		return result;
 	}

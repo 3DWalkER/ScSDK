@@ -53,26 +53,28 @@ public:
 };
 
 int main() {
+
+	auto logger = std::make_shared<spdlog::logger>("Console", std::move(std::make_shared<spdlog::sinks::stdout_color_sink_mt>()));
 	// 创建控制台日志器
 	auto console = spdlog::stdout_color_mt("console");
 
-	// 创建自定义格式化器
-	auto formatter = std::make_unique<spdlog::pattern_formatter>();
-	formatter->add_flag<CustomLevelFormatter>('L').set_pattern("%L");
+	//// 创建自定义格式化器
+	//auto formatter = std::make_unique<spdlog::pattern_formatter>();
+	//formatter->add_flag<CustomLevelFormatter>('L').set_pattern("%L");
 
-	// 设置日志器的格式化器
-	console->set_formatter(std::move(formatter));
+	//// 设置日志器的格式化器
+	//console->set_formatter(std::move(formatter));
 
-	// 设置默认日志器
-	spdlog::set_default_logger(console);
+	//// 设置默认日志器
+	//spdlog::set_default_logger(console);
 
 	// 记录不同级别的日志
-	spdlog::trace("这是一条追踪日志");
-	spdlog::debug("这是一条调试日志");
-	spdlog::info("这是一条信息日志");
-	spdlog::warn("这是一条警告日志");
-	spdlog::error("这是一条错误日志");
-	spdlog::critical("这是一条严重错误日志");
-
+	//spdlog::trace("这是一条追踪日志");
+	//spdlog::debug("这是一条调试日志");
+	//spdlog::info("这是一条信息日志");
+	//spdlog::warn("这是一条警告日志");
+	//spdlog::error("这是一条错误日志");
+	//spdlog::critical("这是一条严重错误日志");
+	logger->log(spdlog::level::trace, "这是一条信息日志");
 	return 0;
 }
