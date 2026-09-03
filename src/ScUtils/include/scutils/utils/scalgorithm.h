@@ -66,7 +66,7 @@ SC_DECL_CONSTEXPR SC_ALWAYS_INLINE scuint32 builtin_popcount(scuint32 v) noexcep
     return __builtin_popcount(v);
 }
 
-SC_DECL_CONSTEXPR SC_ALWAYS_INLINE scuint32 builtin_popcount(quint8 v) noexcept {
+SC_DECL_CONSTEXPR SC_ALWAYS_INLINE scuint32 builtin_popcount(scuint8 v) noexcept {
     return __builtin_popcount(v);
 }
 

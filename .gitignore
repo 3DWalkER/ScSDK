@@ -73,3 +73,6 @@ Testing/
 .DS_Store?
 .Spotlight-V100
 .Trashes
+
+# VS Code
+.vscode/

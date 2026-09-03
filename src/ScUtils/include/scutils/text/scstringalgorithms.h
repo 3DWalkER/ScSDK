@@ -3,6 +3,7 @@
 
 #include "scutils/utils/scnamespace.h"
 #include <algorithm>
+#include <string.h>
 
 class ScStringView;
 

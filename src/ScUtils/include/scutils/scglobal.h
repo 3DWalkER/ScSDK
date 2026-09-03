@@ -267,4 +267,12 @@ SC_API_EXPORT void sc_assert_x(const char* where, const char* what, const char* 
 #	endif
 #endif
 
+#if !defined(SC_EOL)
+#	ifdef SC_OS_WIN
+#		define SC_EOL "\r\n"
+#	else
+#		define SC_EOL "\n"
+#	endif
+#endif
+
 #endif // SCGLOBAL_H

@@ -11,12 +11,22 @@
 template <>
 struct fmt::formatter<ScString> : fmt::formatter<fmt::string_view> {
 	template <typename FormatContext>
-	auto format(const ScString& s, FormatContext& ctx) const {
+	auto format(const ScString& s, FormatContext& ctx) const -> decltype(ctx.out()) {
 		return fmt::formatter<fmt::string_view>::format({ s.data(), s.size() }, ctx);
 	}
 };
 
 SC_BEGIN_NAMESPACE
+
+template <typename T>
+inline size_t formatted_size(const T& v) {
+	return fmt::formatted_size("{}", v);
+}
+
+template <typename T, typename... Args>
+inline size_t formatted_size(const T& v, const Args... args) {
+	return formatted_size(v) + formatted_size(args...);
+}
 
 template <typename... Args>
 inline ScString format(const ScString& fmt, Args &&...args) {

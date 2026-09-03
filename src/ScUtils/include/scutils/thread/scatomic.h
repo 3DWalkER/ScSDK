@@ -231,6 +231,9 @@ public:
 
 	ScBasicAtomicInteger() = default;
 	constexpr ScBasicAtomicInteger(Type value) noexcept : _q_value(value) {}
+	ScBasicAtomicInteger(const ScBasicAtomicInteger &) = delete;
+    ScBasicAtomicInteger &operator=(const ScBasicAtomicInteger &) = delete;
+    ScBasicAtomicInteger &operator=(const ScBasicAtomicInteger &) volatile = delete;
 
 	Type load() const noexcept { return loadRelaxed(); }
 	void store(Type newValue) noexcept { storeRelaxed(newValue); }
