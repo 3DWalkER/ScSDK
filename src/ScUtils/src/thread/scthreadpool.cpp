@@ -3,6 +3,7 @@
 #include "scutils/thread/scrunnable.h"
 
 #include <iterator>
+#include <memory>
 
 ScThreadPool::ScThreadPool()
 	: d_ptr(new ScThreadPoolPrivate(this))
@@ -276,7 +277,7 @@ void ScThreadPoolPrivate::tryToStartMoreThreads()
 void ScThreadPoolPrivate::startThread(ScRunnable* task)
 {
 	SC_ASSERT(task);
-	auto thread = std::make_unique<ScThreadPoolThread>(this);
+	auto thread = std::unique_ptr<ScThreadPoolThread>(new ScThreadPoolThread(this));
 	SC_ASSERT(allThreads.end() == allThreads.find(thread.get()));
 	allThreads.insert(thread.get());
 	++activeThreadNum;

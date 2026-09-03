@@ -6,6 +6,7 @@
 
 #include <new>
 #include <atomic>
+#include <stdlib.h>
 
 #if defined(SC_CC_GNU)
 #	define SC_MALLOC_CHECKED_MALLOC __attribute__((__returns_nonnull__, __malloc__))

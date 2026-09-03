@@ -11,7 +11,7 @@
 template <>
 struct fmt::formatter<ScString> : fmt::formatter<fmt::string_view> {
 	template <typename FormatContext>
-	auto format(const ScString& s, FormatContext& ctx) const {
+	auto format(const ScString& s, FormatContext& ctx) const -> decltype(ctx.out()) {
 		return fmt::formatter<fmt::string_view>::format({ s.data(), s.size() }, ctx);
 	}
 };

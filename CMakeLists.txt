@@ -7,6 +7,7 @@ option(SC_SIMPLE_INSTALL "If enabled, removes all the additional indirection (pl
 option(SC_ENABLE_TESTING "Flag to enable/disable building unit and integration tests" ON)
 
 set(SC_BUILD_ONLY "" CACHE STRING "A semi-colon delimited list of the projects to build")
+set(CMAKE_EXPORT_COMPILE_COMMANDS ON CACHE INTERNAL "Export compile commands to JSON file" FORCE)
 
 get_filename_component(SC_SDK_NATIVE_ROOT "${CMAKE_CURRENT_SOURCE_DIR}" ABSOLUTE)
 

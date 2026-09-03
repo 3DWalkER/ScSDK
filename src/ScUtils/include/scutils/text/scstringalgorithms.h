@@ -3,6 +3,7 @@
 
 #include "scutils/utils/scnamespace.h"
 #include <algorithm>
+#include <string.h>
 
 class ScStringView;
 
@@ -50,11 +51,6 @@ inline void strcpy_s(char(&dst)[N], const char* data, size_t length) {
 	size_t copylen = length > N - 1 ? N - 1 : length;
 	std::copy(data, data + copylen, dst);
 	dst[copylen] = '\0';
-}
-
-template <size_t N>
-inline void strcpy_s(char(&dst)[N], const ScString& src) {
-	SC_DETAIL::strcpy_s(dst, src.data(), src.size());
 }
 
 template <typename Char>

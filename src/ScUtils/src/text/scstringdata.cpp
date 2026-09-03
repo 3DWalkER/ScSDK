@@ -100,7 +100,7 @@ SC_END_NAMESPACE
 using ScRefCounted = SC_DETAIL::RefCounted<char>;
 
 ScStringData::ScStringData(const char* const data, size_t size)
-	: _bytes{}, _small{}
+	: _bytes{}
 {
 	if (!data) return;
 
@@ -110,7 +110,7 @@ ScStringData::ScStringData(const char* const data, size_t size)
 	if (size <= kMaxSmallSize)
 	{
 		if (size > 0)
-			std::memcpy(_small, data, size);
+			memcpy(_small, data, size);
 		setSmallSize(size);
 	}
 	else if (size <= kMaxMediumSize)

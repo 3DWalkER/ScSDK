@@ -5,6 +5,7 @@
 #include "scutils/text/scstringview.h"
 
 #include <ctype.h>
+#include <functional>
 
 class SC_API_EXPORT ScString
 {
@@ -216,7 +217,8 @@ namespace std {
 	template <>
 	struct hash<ScString> {
 		size_t operator()(const ScString& str) const noexcept {
-			return _Hash_array_representation(str.data(), str.size());
+			return 0;
+			// return _Hash_array_representation(str.data(), str.size());
 		}
 	};
 }

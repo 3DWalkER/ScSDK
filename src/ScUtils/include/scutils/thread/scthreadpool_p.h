@@ -7,6 +7,7 @@
 #include <unordered_set>
 #include <queue>
 #include <condition_variable>
+#include <thread>
 
 class ScThreadPoolThread;
 

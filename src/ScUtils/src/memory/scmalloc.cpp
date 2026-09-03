@@ -1,5 +1,7 @@
 #include "scutils/memory/scmalloc.h"
 
+#include <string.h>
+
 SC_BEGIN_NAMESPACE
 
 SC_BEGIN_DETAIL_NAMESPACE
