@@ -82,6 +82,8 @@ ScLoggerFactoryBuilder& ScLoggerFactoryBuilder::setLevelPattern(ScLevelNames lev
 
 ScLoggerFactoryBuilder& ScLoggerFactoryBuilder::addSink(ScSinkCallback callback)
 {
+	if (d && callback)
+		d->sinks.push_back(std::make_shared<ScBasicSink>(callback));
 	return *this;
 }
 
@@ -93,13 +95,7 @@ ScLoggerFactory* ScLoggerFactoryBuilder::build()
 		std::lock_guard<std::mutex> locker(ScLoggerFactoryData::g_factoryMutex);
 		if (!factory)
 		{
-			if (d->isPatternEnabled)
-			{
-				d->patternFormatter = spdlog::details::make_unique<spdlog::pattern_formatter>(
-					d->pattern.data(), d->timeType, d->eol.data(), std::move(d->customFlags)
-				);
-			}
-
+			d->setupFormatter();
 			factory = new ScLoggerFactory(d);
 			d = nullptr;
 		}
@@ -115,14 +111,8 @@ void ScLoggerFactoryBuilder::buildDefault()
 		std::lock_guard<std::mutex> locker(ScLoggerFactoryData::g_factoryMutex);
 		if (!data)
 		{
-			if (d->isPatternEnabled)
-			{
-				d->patternFormatter = spdlog::details::make_unique<spdlog::pattern_formatter>(
-					d->pattern.data(), d->timeType, d->eol.data(), std::move(d->customFlags)
-				);
-			}
-
 			data = d;
+			data->setupFormatter();
 			d = nullptr;
 		}
 	}

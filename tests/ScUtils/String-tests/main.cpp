@@ -8,14 +8,20 @@
 #include <string>
 #include <iostream>
 
+void sinkCallback(const ScStringView& msg)
+{
+	std::cout << std::string(msg.data(), msg.size()) << std::endl;
+}
+
 int main()
 {
 	do {
 		ScLoggerFactory* pFactory = ScLoggerFactoryBuilder("Xde", "D:/Temp", "log.html")
 			.setLoggerType(Sc::LoggerType::Console)
 			.setLoggerLevel(Sc::LoggerLevel::Trace)
-			.setPattern("%^%Y-%m-%d %H:%M:%S %a [%8l]%$")
+			//.setPattern("%^%Y-%m-%d %H:%M:%S %a [%8l]%$")
 			.setLevelPattern({ { Sc::LoggerLevel::Info, "ÐÅÏ¢" },{ Sc::LoggerLevel::Warn, "¾¯¸æ" } })
+			//.addSink(sinkCallback)
 			.build();
 
 		ScLoggerFactoryBuilder("Xde", "D:/Temp", "log.html")
@@ -41,5 +47,5 @@ int main()
 		//SC_LOGGER_WARN(logger, "{}", "test");
 		//SC_LOGGER_ERROR(logger, "{}", "test");
 		//SC_LOGGER_CRITICAL(logger, "{}", "test");
-	} while (1);
+	} while (0);
 }
